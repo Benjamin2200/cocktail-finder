@@ -6,3 +6,12 @@
 .navbar .active {
   font-weight: 600;
 }
+
+.search-form {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.search-form .form-select {
+  max-width: 170px;
+}

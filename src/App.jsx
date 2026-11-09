@@ -1,4 +1,5 @@
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { useState } from 'react'
+import { Card, Col, Container, Form, Nav, Navbar, Row } from 'react-bootstrap'
 import {
   HashRouter,
   NavLink,
@@ -6,6 +7,10 @@ import {
   Routes,
   Link,
 } from 'react-router-dom'
+import {
+  filterCocktailsByIngredient,
+  searchCocktailsByName,
+} from './api/cocktailApi'
 import './App.css'
 
 function PageIntro({ label, title, description }) {
@@ -23,12 +28,88 @@ function PageIntro({ label, title, description }) {
 }
 
 function HomePage() {
+  const [query, setQuery] = useState('')
+  const [searchType, setSearchType] = useState('name')
+  const [drinks, setDrinks] = useState([])
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+
+    if (!query.trim()) {
+      return
+    }
+
+    const results =
+      searchType === 'name'
+        ? await searchCocktailsByName(query)
+        : await filterCocktailsByIngredient(query)
+
+    setDrinks(results)
+  }
+
   return (
-    <PageIntro
-      label="Cocktail Finder"
-      title="Find your next favorite drink"
-      description="Search cocktails by name or ingredient."
-    />
+    <main className="container py-5">
+      <section className="app-intro text-center">
+        <p className="text-uppercase text-muted fw-semibold small mb-2">
+          Cocktail Finder
+        </p>
+        <h1 className="display-4 fw-bold">Find your next favorite drink</h1>
+        <p className="lead text-secondary mb-4">
+          Search cocktails by name or ingredient.
+        </p>
+
+        <Form onSubmit={handleSubmit} className="search-form">
+          <div className="d-flex flex-column flex-md-row gap-2">
+            <Form.Label htmlFor="search-query" className="visually-hidden">
+              Search cocktails
+            </Form.Label>
+            <Form.Control
+              id="search-query"
+              type="search"
+              placeholder={
+                searchType === 'name'
+                  ? 'Search by cocktail name'
+                  : 'Search by ingredient'
+              }
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            <Form.Select
+              aria-label="Search type"
+              value={searchType}
+              onChange={(event) => setSearchType(event.target.value)}
+            >
+              <option value="name">Name</option>
+              <option value="ingredient">Ingredient</option>
+            </Form.Select>
+            <button type="submit" className="btn btn-primary px-4">
+              Search
+            </button>
+          </div>
+        </Form>
+      </section>
+
+      {drinks.length > 0 && (
+        <Row className="g-4 mt-4">
+          {drinks.map((drink) => (
+            <Col key={drink.idDrink} xs={12} sm={6} lg={4}>
+              <Card className="h-100 shadow-sm">
+                <Card.Img variant="top" src={drink.strDrinkThumb} alt="" />
+                <Card.Body className="d-flex flex-column">
+                  <Card.Title>{drink.strDrink}</Card.Title>
+                  <Link
+                    className="btn btn-outline-primary mt-auto"
+                    to={`/drink/${drink.idDrink}`}
+                  >
+                    View details
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+    </main>
   )
 }
 

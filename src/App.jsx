@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import { Card, Col, Container, Form, Nav, Navbar, Row } from 'react-bootstrap'
+import {
+  Alert,
+  Card,
+  Col,
+  Container,
+  Form,
+  Nav,
+  Navbar,
+  Row,
+  Spinner,
+} from 'react-bootstrap'
 import {
   HashRouter,
   NavLink,
@@ -31,20 +41,39 @@ function HomePage() {
   const [query, setQuery] = useState('')
   const [searchType, setSearchType] = useState('name')
   const [drinks, setDrinks] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [hasSearched, setHasSearched] = useState(false)
 
   async function handleSubmit(event) {
     event.preventDefault()
 
     if (!query.trim()) {
+      setError('Enter a cocktail name or ingredient to search.')
       return
     }
 
-    const results =
-      searchType === 'name'
-        ? await searchCocktailsByName(query)
-        : await filterCocktailsByIngredient(query)
+    setIsLoading(true)
+    setError('')
+    setHasSearched(true)
 
-    setDrinks(results)
+    try {
+      const results =
+        searchType === 'name'
+          ? await searchCocktailsByName(query)
+          : await filterCocktailsByIngredient(query)
+
+      setDrinks(results)
+    } catch (requestError) {
+      setDrinks([])
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Unable to search for cocktails.',
+      )
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -82,14 +111,43 @@ function HomePage() {
               <option value="name">Name</option>
               <option value="ingredient">Ingredient</option>
             </Form.Select>
-            <button type="submit" className="btn btn-primary px-4">
-              Search
+            <button
+              type="submit"
+              className="btn btn-primary px-4"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Searching
+                </>
+              ) : (
+                'Search'
+              )}
             </button>
           </div>
         </Form>
       </section>
 
-      {drinks.length > 0 && (
+      {error && (
+        <Alert variant="danger" className="search-feedback mt-4">
+          {error}
+        </Alert>
+      )}
+
+      {hasSearched && !isLoading && !error && drinks.length === 0 && (
+        <Alert variant="info" className="search-feedback mt-4">
+          No cocktails found. Try a different search term.
+        </Alert>
+      )}
+
+      {!isLoading && drinks.length > 0 && (
         <Row className="g-4 mt-4">
           {drinks.map((drink) => (
             <Col key={drink.idDrink} xs={12} sm={6} lg={4}>

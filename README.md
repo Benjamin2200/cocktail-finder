@@ -1,16 +1,75 @@
-# React + Vite
+# Cocktail Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cocktail Finder is a React web app for discovering cocktails by name or
+ingredient. Users can view drink details, save favorites, and get a random
+cocktail suggestion.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Search cocktails by name or ingredient
+- View ingredients, measurements, and preparation instructions
+- Save and remove favorite cocktails
+- Persist favorites in browser `localStorage`
+- Receive toast notifications for favorite changes
+- Get a random cocktail with “Surprise me”
+- Responsive Bootstrap layout
+- Hash-based routing for GitHub Pages compatibility
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Requirements
 
-## Expanding the ESLint configuration
+- Node.js 18 or newer
+- npm
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Install
+
+```bash
+npm install
+```
+
+### Run the development server
+
+```bash
+npm run dev
+```
+
+Open the local URL printed by Vite in your browser.
+
+### Build for production
+
+```bash
+npm run build
+```
+
+### Preview the production build
+
+```bash
+npm run preview
+```
+
+### Run linting
+
+```bash
+npm run lint
+```
+
+## Libraries used
+
+- React
+- Vite
+- React Router
+- React Bootstrap and Bootstrap
+- React Icons
+- React Hot Toast
+
+## API
+
+Cocktail data comes from
+[TheCocktailDB](https://www.thecocktaildb.com/api/json/v1/1/), a free REST API
+that does not require an API key for this project.
+
+## Deployment
+
+The application is designed to deploy to GitHub Pages. The production URL will
+be added here after the deployment setup is completed.

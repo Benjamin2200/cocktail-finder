@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Card,
@@ -16,9 +16,11 @@ import {
   Route,
   Routes,
   Link,
+  useParams,
 } from 'react-router-dom'
 import {
   filterCocktailsByIngredient,
+  getCocktailById,
   searchCocktailsByName,
 } from './api/cocktailApi'
 import './App.css'
@@ -172,12 +174,110 @@ function HomePage() {
 }
 
 function DetailPage() {
+  const { id } = useParams()
+  const [drink, setDrink] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let isCurrent = true
+
+    async function loadDrink() {
+      setIsLoading(true)
+      setError('')
+
+      try {
+        const result = await getCocktailById(id)
+
+        if (isCurrent) {
+          setDrink(result)
+        }
+      } catch (requestError) {
+        if (isCurrent) {
+          setDrink(null)
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : 'Unable to load this cocktail.',
+          )
+        }
+      } finally {
+        if (isCurrent) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadDrink()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [id])
+
+  if (isLoading) {
+    return (
+      <main className="container py-5 text-center">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading cocktail details</span>
+        </Spinner>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="container py-5">
+        <Alert variant="danger">{error}</Alert>
+      </main>
+    )
+  }
+
+  if (!drink) {
+    return (
+      <main className="container py-5">
+        <Alert variant="info">This cocktail could not be found.</Alert>
+      </main>
+    )
+  }
+
+  const ingredients = Array.from({ length: 15 }, (_, index) => {
+    const ingredient = drink[`strIngredient${index + 1}`]
+    const measure = drink[`strMeasure${index + 1}`]
+
+    if (!ingredient?.trim()) {
+      return null
+    }
+
+    return `${measure?.trim() ? `${measure.trim()} ` : ''}${ingredient.trim()}`
+  }).filter(Boolean)
+
   return (
-    <PageIntro
-      label="Drink detail"
-      title="Cocktail details"
-      description="Choose a drink from the search results to see its ingredients and instructions."
-    />
+    <main className="container py-5">
+      <Row className="g-4">
+        <Col md={5}>
+          <img
+            src={drink.strDrinkThumb}
+            alt={drink.strDrink}
+            className="img-fluid rounded shadow-sm"
+          />
+        </Col>
+        <Col md={7}>
+          <p className="text-uppercase text-muted fw-semibold small mb-2">
+            {drink.strCategory || 'Cocktail'}
+          </p>
+          <h1 className="display-5 fw-bold">{drink.strDrink}</h1>
+          <h2 className="h4 mt-4">Ingredients</h2>
+          <ul>
+            {ingredients.map((ingredient) => (
+              <li key={ingredient}>{ingredient}</li>
+            ))}
+          </ul>
+          <h2 className="h4 mt-4">Instructions</h2>
+          <p className="text-secondary">{drink.strInstructions}</p>
+        </Col>
+      </Row>
+    </main>
   )
 }
 

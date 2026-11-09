@@ -15,3 +15,21 @@
 .search-form .form-select {
   max-width: 170px;
 }
+
+.drink-card-image {
+  position: relative;
+}
+
+.favorite-button {
+  color: #dc3545;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+}
+
+.favorite-button:hover,
+.favorite-button:focus {
+  color: #b02a37;
+}

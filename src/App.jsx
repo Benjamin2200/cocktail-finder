@@ -18,24 +18,57 @@ import {
   Link,
   useParams,
 } from 'react-router-dom'
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import {
   filterCocktailsByIngredient,
   getCocktailById,
   searchCocktailsByName,
 } from './api/cocktailApi'
+import { useFavorites } from './context/useFavorites'
 import './App.css'
 
-function PageIntro({ label, title, description }) {
+function FavoriteButton({ drink }) {
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites()
+  const favorite = isFavorite(drink.idDrink)
+
+  function handleClick() {
+    if (favorite) {
+      removeFavorite(drink.idDrink)
+    } else {
+      addFavorite(drink)
+    }
+  }
+
   return (
-    <main className="container py-5">
-      <section className="app-intro text-center">
-        <p className="text-uppercase text-muted fw-semibold small mb-2">
-          {label}
-        </p>
-        <h1 className="display-4 fw-bold">{title}</h1>
-        <p className="lead text-secondary mb-0">{description}</p>
-      </section>
-    </main>
+    <button
+      type="button"
+      className="btn btn-link favorite-button"
+      onClick={handleClick}
+      aria-label={favorite ? `Remove ${drink.strDrink} from favorites` : `Add ${drink.strDrink} to favorites`}
+      aria-pressed={favorite}
+    >
+      {favorite ? <FaHeart /> : <FaRegHeart />}
+    </button>
+  )
+}
+
+function DrinkCard({ drink }) {
+  return (
+    <Card className="h-100 shadow-sm">
+      <div className="drink-card-image">
+        <Card.Img variant="top" src={drink.strDrinkThumb} alt="" />
+        <FavoriteButton drink={drink} />
+      </div>
+      <Card.Body className="d-flex flex-column">
+        <Card.Title>{drink.strDrink}</Card.Title>
+        <Link
+          className="btn btn-outline-primary mt-auto"
+          to={`/drink/${drink.idDrink}`}
+        >
+          View details
+        </Link>
+      </Card.Body>
+    </Card>
   )
 }
 
@@ -153,18 +186,7 @@ function HomePage() {
         <Row className="g-4 mt-4">
           {drinks.map((drink) => (
             <Col key={drink.idDrink} xs={12} sm={6} lg={4}>
-              <Card className="h-100 shadow-sm">
-                <Card.Img variant="top" src={drink.strDrinkThumb} alt="" />
-                <Card.Body className="d-flex flex-column">
-                  <Card.Title>{drink.strDrink}</Card.Title>
-                  <Link
-                    className="btn btn-outline-primary mt-auto"
-                    to={`/drink/${drink.idDrink}`}
-                  >
-                    View details
-                  </Link>
-                </Card.Body>
-              </Card>
+              <DrinkCard drink={drink} />
             </Col>
           ))}
         </Row>
@@ -266,7 +288,10 @@ function DetailPage() {
           <p className="text-uppercase text-muted fw-semibold small mb-2">
             {drink.strCategory || 'Cocktail'}
           </p>
-          <h1 className="display-5 fw-bold">{drink.strDrink}</h1>
+          <div className="d-flex align-items-center gap-2">
+            <h1 className="display-5 fw-bold mb-0">{drink.strDrink}</h1>
+            <FavoriteButton drink={drink} />
+          </div>
           <h2 className="h4 mt-4">Ingredients</h2>
           <ul>
             {ingredients.map((ingredient) => (
@@ -282,12 +307,34 @@ function DetailPage() {
 }
 
 function FavoritesPage() {
+  const { favorites } = useFavorites()
+
   return (
-    <PageIntro
-      label="Favorites"
-      title="Your favorite cocktails"
-      description="Your saved drinks will appear here."
-    />
+    <main className="container py-5">
+      <section className="app-intro text-center">
+        <p className="text-uppercase text-muted fw-semibold small mb-2">
+          Favorites
+        </p>
+        <h1 className="display-4 fw-bold">Your favorite cocktails</h1>
+        <p className="lead text-secondary mb-0">
+          Drinks you save will appear here.
+        </p>
+      </section>
+
+      {favorites.length === 0 ? (
+        <Alert variant="info" className="mt-4">
+          You have not saved any cocktails yet.
+        </Alert>
+      ) : (
+        <Row className="g-4 mt-4">
+          {favorites.map((drink) => (
+            <Col key={drink.idDrink} xs={12} sm={6} lg={4}>
+              <DrinkCard drink={drink} />
+            </Col>
+          ))}
+        </Row>
+      )}
+    </main>
   )
 }
 

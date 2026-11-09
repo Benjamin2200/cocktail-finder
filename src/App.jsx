@@ -19,6 +19,7 @@ import {
   useParams,
 } from 'react-router-dom'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import toast, { Toaster } from 'react-hot-toast'
 import {
   filterCocktailsByIngredient,
   getCocktailById,
@@ -34,8 +35,10 @@ function FavoriteButton({ drink }) {
   function handleClick() {
     if (favorite) {
       removeFavorite(drink.idDrink)
+      toast.success(`${drink.strDrink} removed from favorites`)
     } else {
       addFavorite(drink)
+      toast.success(`${drink.strDrink} added to favorites`)
     }
   }
 
@@ -381,6 +384,7 @@ function AppNavbar() {
 function App() {
   return (
     <HashRouter>
+      <Toaster position="bottom-right" />
       <AppNavbar />
       <Routes>
         <Route path="/" element={<HomePage />} />

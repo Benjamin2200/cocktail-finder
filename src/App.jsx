@@ -21,6 +21,7 @@ import {
 } from 'react-router-dom'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import toast, { Toaster } from 'react-hot-toast'
+import cocktailPlaceholder from './assets/cocktail-placeholder.svg'
 import {
   filterCocktailsByIngredient,
   getCocktailById,
@@ -29,6 +30,22 @@ import {
 } from './api/cocktailApi'
 import { useFavorites } from './context/useFavorites'
 import './App.css'
+
+function DrinkImage({ src, alt, className }) {
+  function handleImageError(event) {
+    event.currentTarget.onerror = null
+    event.currentTarget.src = cocktailPlaceholder
+  }
+
+  return (
+    <img
+      src={src || cocktailPlaceholder}
+      alt={alt}
+      className={className}
+      onError={handleImageError}
+    />
+  )
+}
 
 function FavoriteButton({ drink }) {
   const { addFavorite, removeFavorite, isFavorite } = useFavorites()
@@ -61,7 +78,11 @@ function DrinkCard({ drink }) {
   return (
     <Card className="h-100 shadow-sm">
       <div className="drink-card-image">
-        <Card.Img variant="top" src={drink.strDrinkThumb} alt="" />
+        <DrinkImage
+          src={drink.strDrinkThumb}
+          alt=""
+          className="card-img-top"
+        />
         <FavoriteButton drink={drink} />
       </div>
       <Card.Body className="d-flex flex-column">
@@ -329,7 +350,7 @@ function DetailPage() {
     <main className="container py-5">
       <Row className="g-4">
         <Col md={5}>
-          <img
+          <DrinkImage
             src={drink.strDrinkThumb}
             alt={drink.strDrink}
             className="img-fluid rounded shadow-sm"

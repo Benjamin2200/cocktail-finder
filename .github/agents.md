@@ -35,25 +35,35 @@ FEATURE ORDER
 12. README (install, run, features, libraries used, live URL)
 
 ADDITIONAL IMPROVEMENTS
-- After feature 13, continue with the improvements below in pairs. Implement exactly two improvements per `next` response, then stop and wait for the next `next`.
+- Complete the improvements below before deployment.
+- Implement exactly two improvements per `next` response, then stop and wait for
+  the next `next`.
 - Keep each pair cohesive and avoid starting the following pair early.
-- Preserve the existing feature order and behavior unless an improvement specifically requires a behavior change.
+- Preserve existing behavior unless an improvement specifically requires a
+  behavior change.
 
 13. Add automated tests for API helpers and favorite behavior
-15. Add image fallback handling when a cocktail image fails to load
+14. Add image fallback handling when a cocktail image fails to load
 
-16. Add a dark mode toggle with a saved user preference
-17. Add cocktail category and glass-type filters
+15. Add a dark mode toggle with a saved user preference
+16. Add cocktail category and glass-type filters
 
-18. Add pagination or a "Load more" control for large result sets
-19. Improve performance with lazy-loaded cocktail images
+17. Add pagination or a "Load more" control for large result sets
+18. Improve performance with lazy-loaded cocktail images
 
-20. Add ingredient chips that link to ingredient-based searches
-21. Add metric/imperial measurement preferences
+19. Add ingredient chips that link to ingredient-based searches
+20. Add metric/imperial measurement preferences
 
-22. Add favorites export and import as JSON
-23. Add random cocktail history so users can revisit surprises
+21. Add favorites export and import as JSON
+22. Add random cocktail history so users can revisit surprises
 
-24. Add search debouncing or autocomplete suggestions
-25. Add SEO metadata, including a title13. Deploy to GitHub Pages (base path in vite.config.js, gh-pages package, deploy script)
+23. Add search debouncing or autocomplete suggestions
+24. Add SEO metadata, including a title, description, and updated favicon
+
+25. Deploy to GitHub Pages (base path in vite.config.js, gh-pages package,
+    deploy script)
+
+Do not publish or run the deployment step until all additional improvements are
+complete.
+
 Start with feature 1 only.

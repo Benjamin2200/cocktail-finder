@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 import { FavoritesContext } from './favoritesContext'
+import {
+  addFavorite as addFavoriteToList,
+  isFavorite as checkFavorite,
+  removeFavorite as removeFavoriteFromList,
+} from './favorites'
 
 const FAVORITES_STORAGE_KEY = 'cocktail-finder-favorites'
 
@@ -22,23 +27,17 @@ export function FavoritesProvider({ children }) {
   }, [favorites])
 
   function addFavorite(drink) {
-    setFavorites((currentFavorites) => {
-      if (currentFavorites.some((favorite) => favorite.idDrink === drink.idDrink)) {
-        return currentFavorites
-      }
-
-      return [...currentFavorites, drink]
-    })
+    setFavorites((currentFavorites) => addFavoriteToList(currentFavorites, drink))
   }
 
   function removeFavorite(drinkId) {
     setFavorites((currentFavorites) =>
-      currentFavorites.filter((favorite) => favorite.idDrink !== drinkId),
+      removeFavoriteFromList(currentFavorites, drinkId),
     )
   }
 
   function isFavorite(drinkId) {
-    return favorites.some((favorite) => favorite.idDrink === drinkId)
+    return checkFavorite(favorites, drinkId)
   }
 
   return (

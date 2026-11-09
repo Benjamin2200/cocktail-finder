@@ -69,7 +69,16 @@ Cocktail data comes from
 [TheCocktailDB](https://www.thecocktaildb.com/api/json/v1/1/), a free REST API
 that does not require an API key for this project.
 
-## Deployment
+## Deployment to GitHub Pages
 
-The application is designed to deploy to GitHub Pages. The production URL will
-be added here after the deployment setup is completed.
+The Vite base path is configured for the `cocktail-finder` repository. When you
+are ready to publish, run:
+
+```bash
+npm run deploy
+```
+
+This builds the app and publishes the `dist` directory to the `gh-pages`
+branch. The expected site URL is:
+
+<https://benjamin2200.github.io/cocktail-finder/>

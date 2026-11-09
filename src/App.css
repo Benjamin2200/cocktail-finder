@@ -2,3 +2,7 @@
   max-width: 720px;
   margin: 0 auto;
 }
+
+.navbar .active {
+  font-weight: 600;
+}

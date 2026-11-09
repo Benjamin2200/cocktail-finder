@@ -18,6 +18,7 @@ import {
   Link,
   useNavigate,
   useParams,
+  useSearchParams,
 } from 'react-router-dom'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import toast, { Toaster } from 'react-hot-toast'
@@ -100,10 +101,32 @@ function DrinkCard({ drink }) {
   )
 }
 
+function convertMeasure(measure, system) {
+  if (!measure || system === 'imperial') {
+    return measure
+  }
+
+  return measure
+    .replace(/(\d+(?:\.\d+)?)\s*oz\b/gi, (_, value) =>
+      `${(Number(value) * 29.574).toFixed(0)} ml`,
+    )
+    .replace(/(\d+(?:\.\d+)?)\s*tbsp\b/gi, (_, value) =>
+      `${(Number(value) * 14.787).toFixed(0)} ml`,
+    )
+    .replace(/(\d+(?:\.\d+)?)\s*tsp\b/gi, (_, value) =>
+      `${(Number(value) * 4.929).toFixed(0)} ml`,
+    )
+}
+
 function HomePage() {
   const navigate = useNavigate()
-  const [query, setQuery] = useState('')
-  const [searchType, setSearchType] = useState('name')
+  const [searchParams] = useSearchParams()
+  const [query, setQuery] = useState(
+    () => searchParams.get('ingredient') || '',
+  )
+  const [searchType, setSearchType] = useState(() =>
+    searchParams.has('ingredient') ? 'ingredient' : 'name',
+  )
   const [category, setCategory] = useState('')
   const [drinks, setDrinks] = useState([])
   const [visibleCount, setVisibleCount] = useState(6)
@@ -315,6 +338,9 @@ function HomePage() {
 
 function DetailPage() {
   const { id } = useParams()
+  const [measurementSystem, setMeasurementSystem] = useState(
+    () => localStorage.getItem('cocktail-finder-measurements') || 'imperial',
+  )
   const [drink, setDrink] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -389,7 +415,10 @@ function DetailPage() {
       return null
     }
 
-    return `${measure?.trim() ? `${measure.trim()} ` : ''}${ingredient.trim()}`
+    return {
+      ingredient: ingredient.trim(),
+      measure: convertMeasure(measure?.trim() || '', measurementSystem),
+    }
   }).filter(Boolean)
 
   return (
@@ -411,11 +440,37 @@ function DetailPage() {
             <h1 className="display-5 fw-bold mb-0">{drink.strDrink}</h1>
             <FavoriteButton drink={drink} />
           </div>
-          <h2 className="h4 mt-4">Ingredients</h2>
-          <ul>
-            {ingredients.map((ingredient) => (
-              <li key={ingredient}>{ingredient}</li>
-            ))}
+            <div className="d-flex align-items-center justify-content-between mt-4">
+              <h2 className="h4 mb-0">Ingredients</h2>
+              <Form.Select
+                aria-label="Measurement system"
+                className="measurement-select"
+                value={measurementSystem}
+                onChange={(event) => {
+                  const nextSystem = event.target.value
+                  setMeasurementSystem(nextSystem)
+                  localStorage.setItem(
+                    'cocktail-finder-measurements',
+                    nextSystem,
+                  )
+                }}
+              >
+                <option value="imperial">Imperial</option>
+                <option value="metric">Metric</option>
+              </Form.Select>
+            </div>
+            <ul>
+              {ingredients.map(({ ingredient, measure }) => (
+                <li key={ingredient}>
+                  <Link
+                    className="ingredient-chip"
+                    to={`/?ingredient=${encodeURIComponent(ingredient)}`}
+                  >
+                    {ingredient}
+                  </Link>
+                  {measure && <span className="ms-2">{measure}</span>}
+                </li>
+              ))}
           </ul>
           <h2 className="h4 mt-4">Instructions</h2>
           <p className="text-secondary">{drink.strInstructions}</p>

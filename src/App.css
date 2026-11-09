@@ -137,6 +137,39 @@
   border-color: #3c1f5b;
 }
 
+:root[data-theme='dark'] .card-body .btn-outline-primary {
+  color: #f4edf8;
+  border-color: #c8b9d1;
+}
+
+:root[data-theme='dark'] .card-body .btn-outline-primary:hover,
+:root[data-theme='dark'] .card-body .btn-outline-primary:focus {
+  color: #fff;
+  background-color: #6f4a91;
+  border-color: #f4edf8;
+}
+
+.measurement-select {
+  width: auto;
+  min-width: 120px;
+}
+
+.ingredient-chip {
+  color: #c45b2c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ingredient-chip:hover,
+.ingredient-chip:focus {
+  color: #a94821;
+  text-decoration: underline;
+}
+
+:root[data-theme='dark'] .ingredient-chip {
+  color: #f0a477;
+}
+
 .favorite-button {
   color: #dc3545;
   font-size: 1.25rem;

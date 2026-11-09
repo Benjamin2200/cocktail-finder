@@ -46,7 +46,7 @@ ADDITIONAL IMPROVEMENTS
 14. Add image fallback handling when a cocktail image fails to load
 
 15. Add a dark mode toggle with a saved user preference
-16. Add cocktail category and glass-type filters
+16. Add cocktail category filter
 
 17. Add pagination or a "Load more" control for large result sets
 18. Improve performance with lazy-loaded cocktail images

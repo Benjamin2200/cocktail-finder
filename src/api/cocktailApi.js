@@ -20,6 +20,10 @@ export async function filterCocktailsByIngredient(ingredient) {
   return request(`/filter.php?i=${encodeURIComponent(ingredient.trim())}`)
 }
 
+export async function filterCocktailsByCategory(category) {
+  return request(`/filter.php?c=${encodeURIComponent(category.trim())}`)
+}
+
 export async function getCocktailById(id) {
   const drinks = await request(`/lookup.php?i=${encodeURIComponent(id)}`)
   return drinks[0] ?? null

@@ -24,6 +24,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import cocktailPlaceholder from './assets/cocktail-placeholder.svg'
 import {
   filterCocktailsByIngredient,
+  filterCocktailsByCategory,
   getCocktailById,
   getRandomCocktail,
   searchCocktailsByName,
@@ -31,7 +32,7 @@ import {
 import { useFavorites } from './context/useFavorites'
 import './App.css'
 
-function DrinkImage({ src, alt, className }) {
+function DrinkImage({ src, alt, className, loading = 'lazy' }) {
   function handleImageError(event) {
     event.currentTarget.onerror = null
     event.currentTarget.src = cocktailPlaceholder
@@ -42,6 +43,7 @@ function DrinkImage({ src, alt, className }) {
       src={src || cocktailPlaceholder}
       alt={alt}
       className={className}
+      loading={loading}
       onError={handleImageError}
     />
   )
@@ -102,7 +104,9 @@ function HomePage() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [searchType, setSearchType] = useState('name')
+  const [category, setCategory] = useState('')
   const [drinks, setDrinks] = useState([])
+  const [visibleCount, setVisibleCount] = useState(6)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
@@ -121,12 +125,24 @@ function HomePage() {
     setHasSearched(true)
 
     try {
-      const results =
+      let results =
         searchType === 'name'
           ? await searchCocktailsByName(query)
           : await filterCocktailsByIngredient(query)
 
+      const categoryResults = category
+        ? await filterCocktailsByCategory(category)
+        : null
+
+      if (categoryResults) {
+        const categoryIds = new Set(
+          categoryResults.map((drink) => drink.idDrink),
+        )
+        results = results.filter((drink) => categoryIds.has(drink.idDrink))
+      }
+
       setDrinks(results)
+      setVisibleCount(6)
     } catch (requestError) {
       setDrinks([])
       setError(
@@ -197,6 +213,24 @@ function HomePage() {
               <option value="name">Name</option>
               <option value="ingredient">Ingredient</option>
             </Form.Select>
+            <Form.Select
+              aria-label="Filter by category"
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+            >
+              <option value="">All categories</option>
+              <option value="Ordinary Drink">Ordinary Drink</option>
+              <option value="Cocktail">Cocktail</option>
+              <option value="Shake">Shake</option>
+              <option value="Other/Unknown">Other/Unknown</option>
+              <option value="Cocoa">Cocoa</option>
+              <option value="Shot">Shot</option>
+              <option value="Coffee / Tea">Coffee / Tea</option>
+              <option value="Homemade Liqueur">Homemade Liqueur</option>
+              <option value="Punch / Party Drink">Punch / Party Drink</option>
+              <option value="Beer">Beer</option>
+              <option value="Soft Drink / Soda">Soft Drink / Soda</option>
+            </Form.Select>
             <button
               type="submit"
               className="btn btn-primary px-4"
@@ -256,12 +290,24 @@ function HomePage() {
 
       {!isLoading && drinks.length > 0 && (
         <Row className="g-4 mt-4">
-          {drinks.map((drink) => (
+          {drinks.slice(0, visibleCount).map((drink) => (
             <Col key={drink.idDrink} xs={12} sm={6} lg={4}>
               <DrinkCard drink={drink} />
             </Col>
           ))}
         </Row>
+      )}
+
+      {!isLoading && visibleCount < drinks.length && (
+        <div className="text-center mt-4">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={() => setVisibleCount((count) => count + 6)}
+          >
+            Load more
+          </button>
+        </div>
       )}
     </main>
   )
@@ -354,6 +400,7 @@ function DetailPage() {
             src={drink.strDrinkThumb}
             alt={drink.strDrink}
             className="img-fluid rounded shadow-sm"
+            loading="eager"
           />
         </Col>
         <Col md={7}>
@@ -427,7 +474,7 @@ function NotFoundPage() {
   )
 }
 
-function AppNavbar() {
+function AppNavbar({ darkMode, onToggleDarkMode }) {
   return (
     <Navbar expand="lg" bg="dark" variant="dark">
       <Container>
@@ -443,6 +490,13 @@ function AppNavbar() {
             <Nav.Link as={NavLink} to="/favorites">
               Favorites
             </Nav.Link>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-light ms-lg-3 mt-2 mt-lg-0"
+              onClick={onToggleDarkMode}
+            >
+              {darkMode ? 'Light mode' : 'Dark mode'}
+            </button>
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -451,10 +505,22 @@ function AppNavbar() {
 }
 
 function App() {
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('cocktail-finder-theme') === 'dark',
+  )
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? 'dark' : 'light'
+    localStorage.setItem('cocktail-finder-theme', darkMode ? 'dark' : 'light')
+  }, [darkMode])
+
   return (
     <HashRouter>
       <Toaster position="bottom-right" />
-      <AppNavbar />
+      <AppNavbar
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode((current) => !current)}
+      />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/drink/:id" element={<DetailPage />} />

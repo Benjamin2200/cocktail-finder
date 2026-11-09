@@ -64,6 +64,18 @@
   border-color: #3c1f5b;
 }
 
+:root[data-theme='dark'] .search-form .btn-outline-secondary {
+  color: #f4edf8;
+  border-color: #c8b9d1;
+}
+
+:root[data-theme='dark'] .search-form .btn-outline-secondary:hover,
+:root[data-theme='dark'] .search-form .btn-outline-secondary:focus {
+  color: #fff;
+  background-color: #6f4a91;
+  border-color: #f4edf8;
+}
+
 .card {
   overflow: hidden;
   border: 1px solid #eadfd5;
@@ -71,6 +83,28 @@
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+:root[data-theme='dark'] .app-intro h1,
+:root[data-theme='dark'] .card-title {
+  color: #f4edf8;
+}
+
+:root[data-theme='dark'] .text-secondary,
+:root[data-theme='dark'] .text-muted {
+  color: #c8b9d1 !important;
+}
+
+:root[data-theme='dark'] .form-control,
+:root[data-theme='dark'] .form-select,
+:root[data-theme='dark'] .card {
+  color: #f4edf8;
+  background-color: #2b2332;
+  border-color: #55445f;
+}
+
+:root[data-theme='dark'] .form-control::placeholder {
+  color: #b7a9be;
 }
 
 .card:hover {

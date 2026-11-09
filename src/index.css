@@ -1,8 +1,10 @@
 :root {
+  --page-bg: #fffaf5;
+  --page-text: #2d2438;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
-  color: #2d2438;
-  background-color: #fffaf5;
+  color: var(--page-text);
+  background-color: var(--page-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -14,5 +16,20 @@ body {
   margin: 0;
   background:
     radial-gradient(circle at 90% 0%, rgba(255, 193, 7, 0.14), transparent 28rem),
-    #fffaf5;
+    var(--page-bg);
+  color: var(--page-text);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+:root[data-theme='dark'] {
+  --page-bg: #1c1722;
+  --page-text: #f4edf8;
+}
+
+:root[data-theme='dark'] body {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(196, 91, 44, 0.16), transparent 28rem),
+    var(--page-bg);
 }

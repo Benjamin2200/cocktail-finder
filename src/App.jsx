@@ -16,6 +16,7 @@ import {
   Route,
   Routes,
   Link,
+  useNavigate,
   useParams,
 } from 'react-router-dom'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
@@ -23,6 +24,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import {
   filterCocktailsByIngredient,
   getCocktailById,
+  getRandomCocktail,
   searchCocktailsByName,
 } from './api/cocktailApi'
 import { useFavorites } from './context/useFavorites'
@@ -76,12 +78,14 @@ function DrinkCard({ drink }) {
 }
 
 function HomePage() {
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [searchType, setSearchType] = useState('name')
   const [drinks, setDrinks] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [isRandomLoading, setIsRandomLoading] = useState(false)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -111,6 +115,29 @@ function HomePage() {
       )
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function handleSurpriseMe() {
+    setIsRandomLoading(true)
+    setError('')
+
+    try {
+      const drink = await getRandomCocktail()
+
+      if (!drink) {
+        throw new Error('No random cocktail was returned. Please try again.')
+      }
+
+      navigate(`/drink/${drink.idDrink}`)
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Unable to load a random cocktail.',
+      )
+    } finally {
+      setIsRandomLoading(false)
     }
   }
 
@@ -170,6 +197,27 @@ function HomePage() {
               )}
             </button>
           </div>
+          <button
+            type="button"
+            className="btn btn-outline-secondary mt-3"
+            onClick={handleSurpriseMe}
+            disabled={isLoading || isRandomLoading}
+          >
+            {isRandomLoading ? (
+              <>
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
+                Finding a cocktail
+              </>
+            ) : (
+              'Surprise me'
+            )}
+          </button>
         </Form>
       </section>
 

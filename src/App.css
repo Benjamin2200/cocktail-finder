@@ -1,10 +1,30 @@
 .app-intro {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
+}
+
+.app-intro h1 {
+  color: #3c1f5b;
+  letter-spacing: -0.04em;
+}
+
+.app-intro > p:first-child {
+  color: #c45b2c !important;
+  letter-spacing: 0.14em;
 }
 
 .navbar .active {
   font-weight: 600;
+}
+
+.navbar {
+  background: #3c1f5b !important;
+  box-shadow: 0 2px 12px rgba(60, 31, 91, 0.18);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .search-form {
@@ -12,12 +32,75 @@
   margin: 0 auto;
 }
 
+.search-form .form-control,
+.search-form .form-select {
+  min-height: 48px;
+  border-color: #e6d9cd;
+}
+
 .search-form .form-select {
   max-width: 170px;
 }
 
+.search-form .btn-primary {
+  background-color: #c45b2c;
+  border-color: #c45b2c;
+}
+
+.search-form .btn-primary:hover,
+.search-form .btn-primary:focus {
+  background-color: #a94821;
+  border-color: #a94821;
+}
+
+.search-form .btn-outline-secondary {
+  color: #3c1f5b;
+  border-color: #3c1f5b;
+}
+
+.search-form .btn-outline-secondary:hover,
+.search-form .btn-outline-secondary:focus {
+  background-color: #3c1f5b;
+  border-color: #3c1f5b;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid #eadfd5;
+  border-radius: 0.85rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.75rem 1.5rem rgba(60, 31, 91, 0.12) !important;
+}
+
 .drink-card-image {
   position: relative;
+}
+
+.drink-card-image .card-img-top {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #3c1f5b;
+  font-weight: 700;
+}
+
+.card-body .btn-outline-primary {
+  color: #3c1f5b;
+  border-color: #3c1f5b;
+}
+
+.card-body .btn-outline-primary:hover,
+.card-body .btn-outline-primary:focus {
+  background-color: #3c1f5b;
+  border-color: #3c1f5b;
 }
 
 .favorite-button {
@@ -32,4 +115,19 @@
 .favorite-button:hover,
 .favorite-button:focus {
   color: #b02a37;
+}
+
+@media (max-width: 575.98px) {
+  .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .app-intro h1 {
+    font-size: 2.5rem;
+  }
+
+  .search-form .form-select {
+    max-width: none;
+  }
 }

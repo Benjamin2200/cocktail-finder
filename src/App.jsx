@@ -118,6 +118,16 @@ function convertMeasure(measure, system) {
     )
 }
 
+function getRandomHistory() {
+  try {
+    const storedHistory = localStorage.getItem('cocktail-finder-random-history')
+    const history = storedHistory ? JSON.parse(storedHistory) : []
+    return Array.isArray(history) ? history : []
+  } catch {
+    return []
+  }
+}
+
 function HomePage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -134,6 +144,7 @@ function HomePage() {
   const [error, setError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isRandomLoading, setIsRandomLoading] = useState(false)
+  const [randomHistory, setRandomHistory] = useState(getRandomHistory)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -189,6 +200,19 @@ function HomePage() {
         throw new Error('No random cocktail was returned. Please try again.')
       }
 
+      setRandomHistory((currentHistory) => {
+        const nextHistory = [
+          drink,
+          ...currentHistory.filter(
+            (historyDrink) => historyDrink.idDrink !== drink.idDrink,
+          ),
+        ].slice(0, 10)
+        localStorage.setItem(
+          'cocktail-finder-random-history',
+          JSON.stringify(nextHistory),
+        )
+        return nextHistory
+      })
       navigate(`/drink/${drink.idDrink}`)
     } catch (requestError) {
       setError(
@@ -331,6 +355,19 @@ function HomePage() {
             Load more
           </button>
         </div>
+      )}
+
+      {randomHistory.length > 0 && (
+        <section className="mt-5">
+          <h2 className="h4">Random cocktail history</h2>
+          <Row className="g-4 mt-1">
+            {randomHistory.slice(0, 3).map((drink) => (
+              <Col key={drink.idDrink} xs={12} sm={6} lg={4}>
+                <DrinkCard drink={drink} />
+              </Col>
+            ))}
+          </Row>
+        </section>
       )}
     </main>
   )

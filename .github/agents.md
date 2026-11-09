@@ -54,13 +54,12 @@ ADDITIONAL IMPROVEMENTS
 19. Add ingredient chips that link to ingredient-based searches
 20. Add metric/imperial measurement preferences
 
-21. Add favorites export and import as JSON
-22. Add random cocktail history so users can revisit surprises
+21. Add random cocktail history so users can revisit surprises
 
-23. Add search debouncing or autocomplete suggestions
-24. Add SEO metadata, including a title, description, and updated favicon
+22. Add search debouncing or autocomplete suggestions
+23. Add SEO metadata, including a title, description, and updated favicon
 
-25. Deploy to GitHub Pages (base path in vite.config.js, gh-pages package,
+24. Deploy to GitHub Pages (base path in vite.config.js, gh-pages package,
     deploy script)
 
 Do not publish or run the deployment step until all additional improvements are

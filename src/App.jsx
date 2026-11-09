@@ -50,7 +50,7 @@ function DrinkImage({ src, alt, className, loading = 'lazy' }) {
   )
 }
 
-function FavoriteButton({ drink }) {
+function FavoriteButton({ drink, prominent = false }) {
   const { addFavorite, removeFavorite, isFavorite } = useFavorites()
   const favorite = isFavorite(drink.idDrink)
 
@@ -67,12 +67,15 @@ function FavoriteButton({ drink }) {
   return (
     <button
       type="button"
-      className="btn btn-link favorite-button"
+      className={`btn ${prominent ? 'favorite-action' : 'favorite-button'}`}
       onClick={handleClick}
       aria-label={favorite ? `Remove ${drink.strDrink} from favorites` : `Add ${drink.strDrink} to favorites`}
       aria-pressed={favorite}
     >
       {favorite ? <FaHeart /> : <FaRegHeart />}
+      {prominent && (
+        <span>{favorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+      )}
     </button>
   )
 }
@@ -86,7 +89,7 @@ function DrinkCard({ drink }) {
           alt=""
           className="card-img-top"
         />
-        <FavoriteButton drink={drink} />
+        <FavoriteButton drink={drink} prominent />
       </div>
       <Card.Body className="d-flex flex-column">
         <Card.Title>{drink.strDrink}</Card.Title>
@@ -145,6 +148,25 @@ function HomePage() {
   const [hasSearched, setHasSearched] = useState(false)
   const [isRandomLoading, setIsRandomLoading] = useState(false)
   const [randomHistory, setRandomHistory] = useState(getRandomHistory)
+  const [suggestions, setSuggestions] = useState([])
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchType !== 'name' || query.trim().length < 2) {
+        setSuggestions([])
+        return
+      }
+
+      try {
+        const results = await searchCocktailsByName(query)
+        setSuggestions(results.slice(0, 5))
+      } catch {
+        setSuggestions([])
+      }
+    }, 350)
+
+    return () => clearTimeout(timer)
+  }, [query, searchType])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -241,17 +263,37 @@ function HomePage() {
             <Form.Label htmlFor="search-query" className="visually-hidden">
               Search cocktails
             </Form.Label>
-            <Form.Control
-              id="search-query"
-              type="search"
-              placeholder={
-                searchType === 'name'
-                  ? 'Search by cocktail name'
-                  : 'Search by ingredient'
-              }
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+            <div className="search-input-wrapper">
+              <Form.Control
+                id="search-query"
+                type="search"
+                placeholder={
+                  searchType === 'name'
+                    ? 'Search by cocktail name'
+                    : 'Search by ingredient'
+                }
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                autoComplete="off"
+              />
+              {suggestions.length > 0 && (
+                <ul className="search-suggestions">
+                  {suggestions.map((suggestion) => (
+                    <li key={suggestion.idDrink}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuery(suggestion.strDrink)
+                          setSuggestions([])
+                        }}
+                      >
+                        {suggestion.strDrink}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <Form.Select
               aria-label="Search type"
               value={searchType}
@@ -475,8 +517,8 @@ function DetailPage() {
           </p>
           <div className="d-flex align-items-center gap-2">
             <h1 className="display-5 fw-bold mb-0">{drink.strDrink}</h1>
-            <FavoriteButton drink={drink} />
           </div>
+          <FavoriteButton drink={drink} prominent />
             <div className="d-flex align-items-center justify-content-between mt-4">
               <h2 className="h4 mb-0">Ingredients</h2>
               <Form.Select
@@ -605,6 +647,21 @@ function App() {
     document.documentElement.dataset.theme = darkMode ? 'dark' : 'light'
     localStorage.setItem('cocktail-finder-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
+
+  useEffect(() => {
+    document.title = 'Cocktail Finder | Discover Your Next Drink'
+    const description =
+      'Search cocktails by name or ingredient, explore drink details, and save your favorites.'
+    let meta = document.querySelector('meta[name="description"]')
+
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.name = 'description'
+      document.head.appendChild(meta)
+    }
+
+    meta.content = description
+  }, [])
 
   return (
     <HashRouter>
